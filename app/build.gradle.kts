@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "mhha.sample.mychahting"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "mhha.sample.mychahting"
