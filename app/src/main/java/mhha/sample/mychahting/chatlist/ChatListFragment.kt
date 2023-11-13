@@ -1,29 +1,30 @@
-package mhha.sample.mychahting.userlist
+package mhha.sample.mychahting.chatlist
 
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import mhha.sample.mychahting.R
+import mhha.sample.mychahting.databinding.FragmentChatlistBinding
 import mhha.sample.mychahting.databinding.FragmentUserlistBinding
 
-class UserFrgment: Fragment(R.layout.fragment_userlist) {
+class ChatListFragment: Fragment(R.layout.fragment_chatlist) {
 
-    private lateinit var binding: FragmentUserlistBinding
+    private lateinit var binding: FragmentChatlistBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentUserlistBinding.bind(view)
+        binding = FragmentChatlistBinding.bind(view)
 
-        val userListAdapter = UserAdapter()
-        binding.userListRecyclerView.apply {
+        val chatListAdapter = ChatListAdpter()
+        binding.chatListRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = userListAdapter
+            adapter = chatListAdapter
         } //binding.userListRecyclerView.apply
 
-        userListAdapter.submitList(
-            mutableListOf<UserItem?>().apply {
-                add(UserItem("11","22","33"))
+        chatListAdapter.submitList(
+            mutableListOf<ChatRoomItem?>().apply {
+                add(ChatRoomItem("11","22","33"))
             }
         )
 

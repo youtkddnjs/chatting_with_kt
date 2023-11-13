@@ -6,13 +6,17 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import mhha.sample.mychahting.chatlist.ChatListFragment
 import mhha.sample.mychahting.databinding.ActivityMainBinding
+import mhha.sample.mychahting.mypage.MyPageFragmnet
 import mhha.sample.mychahting.userlist.UserFrgment
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val userFragment = UserFrgment()
+    private val chatListFragment = ChatListFragment()
+    private val myPageFragment = MyPageFragmnet()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,13 +32,22 @@ class MainActivity : AppCompatActivity() {
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
-                R.id.userList->{ return@setOnItemSelectedListener true}
-                R.id.chatroomList->{ return@setOnItemSelectedListener true}
-                R.id.myPage->{ return@setOnItemSelectedListener true}
+                R.id.userList->{
+                    replaceFragment(userFragment)
+                    return@setOnItemSelectedListener true
+                }
+                R.id.chatroomList->{
+                    replaceFragment(chatListFragment)
+                    return@setOnItemSelectedListener true
+                }
+                R.id.myPage->{
+                    replaceFragment(myPageFragment)
+                    return@setOnItemSelectedListener true
+                }
                 else -> { return@setOnItemSelectedListener false}
             }//when(it.itemId)
         }//binding.bottomNavigationView.setOnItemSelectedListener
-
+        replaceFragment(userFragment)
     } //override fun onCreate(savedInstanceState: Bundle?)
 
     private fun replaceFragment(fragment: Fragment){
