@@ -7,6 +7,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.firebase.database.database
+import mhha.sample.mychahting.Key.Companion.DB_URL
+import mhha.sample.mychahting.Key.Companion.DB_USERS
 import mhha.sample.mychahting.databinding.ActivityLoginBinding
 
 class LoginActivity: AppCompatActivity() {
@@ -16,6 +19,7 @@ class LoginActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        //회원 가입 버튼
         binding.signUpButton.setOnClickListener{
             val email = binding.emailEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
@@ -37,6 +41,7 @@ class LoginActivity: AppCompatActivity() {
             }
         }//binding.signUpButton.setOnClickListener
 
+        //로그인 버튼
         binding.signInButton.setOnClickListener {
             val email = binding.emailEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
@@ -44,9 +49,16 @@ class LoginActivity: AppCompatActivity() {
             if(email.isNotEmpty() && password.isNotEmpty()){
                 Firebase.auth.signInWithEmailAndPassword(email,password)
                     .addOnCompleteListener(this){
-                        if(it.isSuccessful){
+                        val currenUser = Firebase.auth.currentUser
+                        if(it.isSuccessful && currenUser != null ){
                             //로그인 성공
                             Toast.makeText(this,"로그인 성공.",Toast.LENGTH_SHORT).show()
+                            val userId = currenUser.uid
+                            val user = mutableMapOf<String, Any>()
+                            user["userId"] = userId
+                            user["userName"] = email
+
+                            Firebase.database(DB_URL).reference.child(DB_USERS).child(userId).updateChildren(user)
 
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
