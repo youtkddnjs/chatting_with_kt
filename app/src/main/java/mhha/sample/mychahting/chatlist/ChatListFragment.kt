@@ -4,6 +4,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.database
+import mhha.sample.mychahting.Key
 import mhha.sample.mychahting.R
 import mhha.sample.mychahting.databinding.FragmentChatlistBinding
 import mhha.sample.mychahting.databinding.FragmentUserlistBinding
@@ -22,11 +29,28 @@ class ChatListFragment: Fragment(R.layout.fragment_chatlist) {
             adapter = chatListAdapter
         } //binding.userListRecyclerView.apply
 
-        chatListAdapter.submitList(
-            mutableListOf<ChatRoomItem?>().apply {
-                add(ChatRoomItem("11","22","33"))
-            }
-        )
+        val currentUserId = Firebase.auth.currentUser?.uid ?: return
+        val chatRoomsDB = Firebase.database.reference.child(Key.DB_CHAT_ROOMS).child(currentUserId)
+
+        chatRoomsDB.addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val chatRoomList = snapshot.children.map {
+                    it.getValue(ChatRoomItem::class.java)
+                }
+                chatListAdapter.submitList(chatRoomList)
+            }//override fun onDataChange(snapshot: DataSnapshot)
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }//override fun onCancelled(error: DatabaseError)
+        })//chatRoomsDB.addValueEventListener(object: ValueEventListener
+
+
+//        chatListAdapter.submitList(
+//            mutableListOf<ChatRoomItem?>().apply {
+//                add(ChatRoomItem("11","22","33"))
+//            }
+//        )
 
     } //override fun onViewCreated(view: View, savedInstanceState: Bundle?)
 } //class UserFrgment: Fragment(R.layout.fragment_userlist)

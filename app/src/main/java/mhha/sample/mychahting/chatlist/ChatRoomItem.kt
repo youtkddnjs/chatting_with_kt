@@ -1,7 +1,8 @@
 package mhha.sample.mychahting.chatlist
 
 data class ChatRoomItem (
-    val chatRoomID : String,
-    val otherUserNmae: String,
-    val lastMessage: String,
+    val chatRoomID : String? = null,
+    val lastMessage: String? = null,
+    val otherUserNmae: String? = null,
+    val otherUserId: String? = null
 )
