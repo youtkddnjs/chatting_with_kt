@@ -36,11 +36,11 @@ class UserFrgment: Fragment(R.layout.fragment_userlist) {
                 if(it.value != null){
                     //해당하는 방이 있음.
                     val chatRoom = it.getValue(ChatRoomItem::class.java)
-                    chatRoomId = chatRoom?.chatRoomID ?: ""
+                    chatRoomId = chatRoom?.chatRoomId ?: ""
                 }else{
                     chatRoomId = UUID.randomUUID().toString()
                     var newChatRoom = ChatRoomItem(
-                        chatRoomID = chatRoomId,
+                        chatRoomId = chatRoomId,
                         otherUserName = otherUser.userName,
                         otherUserId = otherUser.userId,
                     )
@@ -51,8 +51,6 @@ class UserFrgment: Fragment(R.layout.fragment_userlist) {
                 intent.putExtra("chatRoomId", chatRoomId)
                 startActivity(intent)
             } //chatRoomDB.get().addOnSuccessListener
-            "otherUserId"
-            "otherUser"
         } //val userListAdapter = UserAdapter
 
 

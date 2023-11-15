@@ -1,6 +1,7 @@
 package mhha.sample.mychahting.chatdetail
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,7 +35,7 @@ class ChatActivity: AppCompatActivity() {
         chatRoomId = intent.getStringExtra("chatRoomId") ?: return
         otherUserId = intent.getStringExtra("otherUserId") ?: return
         myUserId = Firebase.auth.currentUser?.uid ?: ""
-
+        Log.d("chat", "chatRoomId : ${chatRoomId}, otherUserId : ${otherUserId}, myUserId : ${myUserId}")
         Firebase.database.reference.child(Key.DB_USERS).child(myUserId).get()
             .addOnSuccessListener {
                 val myUserItem = it.getValue(UserItem::class.java)
@@ -50,8 +51,11 @@ class ChatActivity: AppCompatActivity() {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val chatItem = snapshot.getValue(ChatItem::class.java)
                 chatItem ?: return
+
                 chatItemList.add(chatItem)
-                chatAdpter.submitList(chatItemList)
+                //11.채팅알림수신하기 06:00 참고
+                chatAdpter.submitList(chatItemList.toMutableList())
+//                chatAdpter.submitList(chatItemList)
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}

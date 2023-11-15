@@ -17,7 +17,7 @@ class ChatListAdpter(private val onClick: (ChatRoomItem) -> Unit ): ListAdapter<
             binding.lastMessageTextView.text = item.lastMessage
 
             binding.root.setOnClickListener {
-                onClick
+                onClick(item)
             }
 
         }//fun bind(item: UserItem)
@@ -37,7 +37,7 @@ class ChatListAdpter(private val onClick: (ChatRoomItem) -> Unit ): ListAdapter<
     companion object{
         val differ = object : DiffUtil.ItemCallback<ChatRoomItem>(){
             override fun areItemsTheSame(oldItem: ChatRoomItem, newItem: ChatRoomItem): Boolean {
-                return oldItem.chatRoomID == newItem.chatRoomID
+                return oldItem.chatRoomId == newItem.chatRoomId
             }
 
             override fun areContentsTheSame(oldItem: ChatRoomItem, newItem: ChatRoomItem): Boolean {

@@ -28,7 +28,7 @@ class ChatListFragment: Fragment(R.layout.fragment_chatlist) {
         val chatListAdapter = ChatListAdpter{chatRoomItem ->
             val intent = Intent(context, ChatActivity::class.java)
             intent.putExtra("otherUserId", chatRoomItem.otherUserId)
-            intent.putExtra("chatRoomId", chatRoomItem.chatRoomID)
+            intent.putExtra("chatRoomId", chatRoomItem.chatRoomId)
             startActivity(intent)
         }
         binding.chatListRecyclerView.apply {
