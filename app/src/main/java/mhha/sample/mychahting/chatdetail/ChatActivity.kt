@@ -1,6 +1,7 @@
 package mhha.sample.mychahting.chatdetail
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.Firebase
@@ -21,6 +22,7 @@ class ChatActivity: AppCompatActivity() {
     private var chatRoomId: String = ""
     private var otherUserId: String = ""
     private var myUserId: String = ""
+    private var myUserName: String = ""
 
     private val chatItemList = mutableListOf<ChatItem>()
 
@@ -36,7 +38,7 @@ class ChatActivity: AppCompatActivity() {
         Firebase.database.reference.child(Key.DB_USERS).child(myUserId).get()
             .addOnSuccessListener {
                 val myUserItem = it.getValue(UserItem::class.java)
-                val myUserName = myUserItem?.userName
+                myUserName = myUserItem?.userName ?: ""
             }
         Firebase.database.reference.child(Key.DB_USERS).child(otherUserId).get()
             .addOnSuccessListener {
@@ -66,6 +68,34 @@ class ChatActivity: AppCompatActivity() {
             layoutManager = LinearLayoutManager(context)
             adapter = chatAdpter
         }
+
+        // 메세지 보내기
+        binding.sendButton.setOnClickListener {
+            val message = binding.messageEditText.text.toString()
+            if(message.isEmpty()){
+                Toast.makeText(applicationContext, "메세지를 입력하세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val newChatItem = ChatItem(
+                message = message,
+                userId = myUserId,
+
+            )
+            Firebase.database.reference.child(Key.DB_CHATS).child(chatRoomId).push().apply {
+                newChatItem.chatId = key
+                setValue(newChatItem)
+            }
+
+            val updates: MutableMap<String,Any> = hashMapOf(
+                "${Key.DB_CHAT_ROOMS}/$myUserId/$otherUserId/lastMessage" to message,
+                "${Key.DB_CHAT_ROOMS}/$otherUserId/$myUserId/lastMessage" to message,
+                "${Key.DB_CHAT_ROOMS}/$otherUserId/$myUserId/chatRoomId" to chatRoomId,
+                "${Key.DB_CHAT_ROOMS}/$otherUserId/$myUserId/otherUserId" to myUserId,
+                "${Key.DB_CHAT_ROOMS}/$otherUserId/$myUserId/otherUserName" to myUserName,
+            )
+            Firebase.database.reference.updateChildren(updates)
+            binding.messageEditText.text.clear()
+        }//binding.sendButton.setOnClickListener
 
     } //override fun onCreate(savedInstanceState: Bundle?)
 } //class ChatActivity: AppCompatActivity()

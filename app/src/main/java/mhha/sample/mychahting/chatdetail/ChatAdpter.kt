@@ -19,11 +19,11 @@ class ChatAdpter: ListAdapter<ChatItem, ChatAdpter.ViewHolder>(differ) {
             if(item.userId == otherUserItem?.userId){
                 binding.usernameTextView.isVisible = true
                 binding.usernameTextView.text= otherUserItem?.userName //밖에서 넣어주기
-                binding.messageTextView.text = item.meassge
+                binding.messageTextView.text = item.message
                 binding.messageTextView.gravity = Gravity.START
             }else{
                 binding.usernameTextView.isVisible = false
-                binding.messageTextView.text =item.meassge
+                binding.messageTextView.text =item.message
                 binding.messageTextView.gravity = Gravity.END
             }
         }//fun bind(item: UserItem)
