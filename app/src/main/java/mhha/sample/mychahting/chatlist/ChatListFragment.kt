@@ -1,5 +1,6 @@
 package mhha.sample.mychahting.chatlist
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import mhha.sample.mychahting.Key
 import mhha.sample.mychahting.R
+import mhha.sample.mychahting.chatdetail.ChatActivity
 import mhha.sample.mychahting.databinding.FragmentChatlistBinding
 import mhha.sample.mychahting.databinding.FragmentUserlistBinding
 
@@ -23,7 +25,12 @@ class ChatListFragment: Fragment(R.layout.fragment_chatlist) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentChatlistBinding.bind(view)
 
-        val chatListAdapter = ChatListAdpter()
+        val chatListAdapter = ChatListAdpter{chatRoomItem ->
+            val intent = Intent(context, ChatActivity::class.java)
+            intent.putExtra("otherUserId", chatRoomItem.otherUserId)
+            intent.putExtra("chatRoomId", chatRoomItem.chatRoomID)
+            startActivity(intent)
+        }
         binding.chatListRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = chatListAdapter

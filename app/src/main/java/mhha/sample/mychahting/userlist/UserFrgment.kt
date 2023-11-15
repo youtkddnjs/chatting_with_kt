@@ -1,5 +1,6 @@
 package mhha.sample.mychahting.userlist
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -13,7 +14,10 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import mhha.sample.mychahting.Key
 import mhha.sample.mychahting.R
+import mhha.sample.mychahting.chatdetail.ChatActivity
+import mhha.sample.mychahting.chatlist.ChatRoomItem
 import mhha.sample.mychahting.databinding.FragmentUserlistBinding
+import java.util.UUID
 
 class UserFrgment: Fragment(R.layout.fragment_userlist) {
 
@@ -23,7 +27,35 @@ class UserFrgment: Fragment(R.layout.fragment_userlist) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentUserlistBinding.bind(view)
 
-        val userListAdapter = UserAdapter()
+        val userListAdapter = UserAdapter{ otherUser ->
+
+            var myUserId = Firebase.auth.currentUser?.uid ?: ""
+            val chatRoomDB = Firebase.database.reference.child(Key.DB_CHAT_ROOMS).child(myUserId).child(otherUser.userId ?: "")
+            chatRoomDB.get().addOnSuccessListener {
+                var chatRoomId= ""
+                if(it.value != null){
+                    //해당하는 방이 있음.
+                    val chatRoom = it.getValue(ChatRoomItem::class.java)
+                    chatRoomId = chatRoom?.chatRoomID ?: ""
+                }else{
+                    chatRoomId = UUID.randomUUID().toString()
+                    var newChatRoom = ChatRoomItem(
+                        chatRoomID = chatRoomId,
+                        otherUserName = otherUser.userName,
+                        otherUserId = otherUser.userId,
+                    )
+                    chatRoomDB.setValue(newChatRoom)
+                }
+                val intent = Intent(context, ChatActivity::class.java)
+                intent.putExtra("otherUserId", otherUser.userId)
+                intent.putExtra("chatRoomId", chatRoomId)
+                startActivity(intent)
+            } //chatRoomDB.get().addOnSuccessListener
+            "otherUserId"
+            "otherUser"
+        } //val userListAdapter = UserAdapter
+
+
         binding.userListRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = userListAdapter

@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import mhha.sample.mychahting.databinding.ItemChatBinding
-import mhha.sample.mychahting.databinding.ItemChatroomBinding
 import mhha.sample.mychahting.userlist.UserItem
 
 class ChatAdpter: ListAdapter<ChatItem, ChatAdpter.ViewHolder>(differ) {

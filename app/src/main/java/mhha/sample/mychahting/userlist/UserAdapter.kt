@@ -7,13 +7,18 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import mhha.sample.mychahting.databinding.ItemUserBinding
 
-class UserAdapter: ListAdapter<UserItem, UserAdapter.ViewHolder>(differ) {
+class UserAdapter(private val onclick: (UserItem) -> Unit): ListAdapter<UserItem, UserAdapter.ViewHolder>(differ) {
 
 
     inner class ViewHolder(private  val binding: ItemUserBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(item: UserItem){
             binding.nicknameTextView.text=item.userName
             binding.descriptionTextView.text = item.description
+
+            binding.root.setOnClickListener {
+                onclick(item)
+            }
+
         }//fun bind(item: UserItem)
     }
 
