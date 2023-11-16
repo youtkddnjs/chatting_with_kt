@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.database.database
+import com.google.firebase.messaging.messaging
 import mhha.sample.mychahting.Key.Companion.DB_URL
 import mhha.sample.mychahting.Key.Companion.DB_USERS
 import mhha.sample.mychahting.databinding.ActivityLoginBinding
@@ -54,16 +55,21 @@ class LoginActivity: AppCompatActivity() {
                             //로그인 성공
                             Toast.makeText(this,"로그인 성공.",Toast.LENGTH_SHORT).show()
                             val userId = currenUser.uid
-                            val user = mutableMapOf<String, Any>()
-                            user["userId"] = userId
-                            user["userName"] = email
 
-                            Firebase.database(DB_URL).reference.child(DB_USERS).child(userId).updateChildren(user)
+                            Firebase.messaging.token.addOnCompleteListener {
+                                val token = it.result
+                                val user = mutableMapOf<String, Any>()
+                                user["userId"] = userId
+                                user["userName"] = email
+                                user["fcmToken"] = token
+                                Firebase.database(DB_URL).reference.child(DB_USERS).child(userId).updateChildren(user)
 
-                            val intent = Intent(this, MainActivity::class.java)
-                            startActivity(intent)
-                            finish()
-
+                                val intent = Intent(this, MainActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }.addOnFailureListener { 
+                                //확인해볼것
+                            }
                         }else{
                             //로그인 실패
                             Toast.makeText(this,"로그인 실패.",Toast.LENGTH_SHORT).show()

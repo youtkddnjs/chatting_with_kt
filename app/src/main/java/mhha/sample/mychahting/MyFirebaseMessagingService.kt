@@ -3,6 +3,7 @@ package mhha.sample.mychahting
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -13,7 +14,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-
+        Log.d("Permission","onMessageReceived")
         // Create the NotificationChannel
         val name = getString(R.string.channel_name)
         val descriptionText = getString(R.string.channel_description)
