@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.database.ChildEventListener
@@ -30,12 +31,14 @@ class ChatActivity: AppCompatActivity() {
 
     private lateinit var binding: ActivityChatdetailBinding
     private val chatAdpter = ChatAdpter()
+    private lateinit var linearLayoutManager : LinearLayoutManager
 
     private var chatRoomId: String = ""
     private var otherUserId: String = ""
     private var myUserId: String = ""
     private var myUserName: String = ""
     private var otherUserFcmToken: String = ""
+
 
 
     private val chatItemList = mutableListOf<ChatItem>()
@@ -55,11 +58,23 @@ class ChatActivity: AppCompatActivity() {
                 myUserName = myUserItem?.userName ?: ""
                 getOtherUserData()
             }
-
+        linearLayoutManager = LinearLayoutManager(applicationContext)
         binding.chatRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = linearLayoutManager
+//            layoutManager = LinearLayoutManager(context).apply {
+//                reverseLayout = true 이런 값도 쓸 수 있음
+//            }
             adapter = chatAdpter
         }
+
+        // 채팅후 스크롤 되도록
+        chatAdpter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                linearLayoutManager.smoothScrollToPosition(binding.chatRecyclerView,null, chatAdpter.itemCount)
+            }
+        })
+
 
         // 메세지 보내기
         binding.sendButton.setOnClickListener {
@@ -137,6 +152,8 @@ class ChatActivity: AppCompatActivity() {
                 //11.채팅알림수신하기 06:00 참고
                 chatAdpter.submitList(chatItemList.toMutableList())
 //                chatAdpter.submitList(chatItemList)
+
+//                binding.chatRecyclerView.scrollToPosition(chatItemList.size - 1 ) 이런 코드가 있음
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
