@@ -12,8 +12,19 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.database
 import mhha.sample.mychahting.Key
+import mhha.sample.mychahting.R
 import mhha.sample.mychahting.databinding.ActivityChatdetailBinding
 import mhha.sample.mychahting.userlist.UserItem
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
+import kotlin.math.log
 
 class ChatActivity: AppCompatActivity() {
 
@@ -24,6 +35,8 @@ class ChatActivity: AppCompatActivity() {
     private var otherUserId: String = ""
     private var myUserId: String = ""
     private var myUserName: String = ""
+    private var otherUserFcmToken: String = ""
+
 
     private val chatItemList = mutableListOf<ChatItem>()
 
@@ -40,33 +53,8 @@ class ChatActivity: AppCompatActivity() {
             .addOnSuccessListener {
                 val myUserItem = it.getValue(UserItem::class.java)
                 myUserName = myUserItem?.userName ?: ""
+                getOtherUserData()
             }
-        Firebase.database.reference.child(Key.DB_USERS).child(otherUserId).get()
-            .addOnSuccessListener {
-                val otherUesrItem = it.getValue(UserItem::class.java)
-                chatAdpter.otherUserItem = otherUesrItem
-            }
-
-        Firebase.database.reference.child(Key.DB_CHATS).child(chatRoomId).addChildEventListener(object : ChildEventListener{
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val chatItem = snapshot.getValue(ChatItem::class.java)
-                chatItem ?: return
-
-                chatItemList.add(chatItem)
-                //11.채팅알림수신하기 06:00 참고
-                chatAdpter.submitList(chatItemList.toMutableList())
-//                chatAdpter.submitList(chatItemList)
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {}
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
-
 
         binding.chatRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
@@ -98,8 +86,66 @@ class ChatActivity: AppCompatActivity() {
                 "${Key.DB_CHAT_ROOMS}/$otherUserId/$myUserId/otherUserName" to myUserName,
             )
             Firebase.database.reference.updateChildren(updates)
+
+            // FCM 보내기
+            val client = OkHttpClient()
+            val root = JSONObject()
+            val notification = JSONObject()
+            notification.put("title", getString(R.string.app_name))
+            notification.put("body", message)
+            root.put("to", otherUserFcmToken)
+            root.put("priority", "high")
+            root.put("notification",notification)
+            val requestBody = root.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
+            val request = Request.Builder().post(requestBody).url("https://fcm.googleapis.com/fcm/send")
+                .header("Authorization", "key=AAAAyZft31o:APA91bHyRrUTMX4u3Jj-M27jIHUzjJPbMvIpCyZ7VQocs7Zlk6sSI2I-YN99DZxXgwu42CnMTPp5FKQkTj42aiPk5z9wdSpHt-cRK_uTQ2yr80BQV7fzC-m0lXLMZFxDVdXtkyFfkwNj")
+                .build()
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    e.stackTraceToString()
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    Log.e("Chatting", response.toString())
+                }
+            })
+
             binding.messageEditText.text.clear()
         }//binding.sendButton.setOnClickListener
-
     } //override fun onCreate(savedInstanceState: Bundle?)
+
+    private fun getOtherUserData(){
+        Firebase.database.reference.child(Key.DB_USERS).child(otherUserId).get()
+            .addOnSuccessListener {
+                val otherUesrItem = it.getValue(UserItem::class.java)
+                otherUserFcmToken = otherUesrItem?.fcmToken.orEmpty()
+                Log.d("token : ", "${otherUserFcmToken}")
+                chatAdpter.otherUserItem = otherUesrItem
+
+                binding.sendButton.isEnabled = true
+                getChatData()
+            }
+    }
+
+    private fun getChatData(){
+        Firebase.database.reference.child(Key.DB_CHATS).child(chatRoomId).addChildEventListener(object : ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val chatItem = snapshot.getValue(ChatItem::class.java)
+                chatItem ?: return
+
+                chatItemList.add(chatItem)
+                //11.채팅알림수신하기 06:00 참고
+                chatAdpter.submitList(chatItemList.toMutableList())
+//                chatAdpter.submitList(chatItemList)
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
 } //class ChatActivity: AppCompatActivity()
