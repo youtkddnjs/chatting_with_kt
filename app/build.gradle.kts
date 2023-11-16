@@ -64,4 +64,5 @@ dependencies {
 
     //com.google.firebase:firebase-messaging-ktx	23.2.1
     implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
 }

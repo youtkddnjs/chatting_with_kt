@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">My Chahting</string>
+    <string name="default_notification_channel_id">default_notification_channel_id</string>
+    <string name="channel_name">채팅이다</string>
+    <string name="channel_description">채팅에 대한 알림</string>
 </resources>
