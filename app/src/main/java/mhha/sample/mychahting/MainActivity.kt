@@ -45,20 +45,24 @@ class MainActivity : AppCompatActivity() {
             when(it.itemId){
                 R.id.userList->{
                     replaceFragment(userFragment)
+                    supportActionBar?.title = "친구"
                     return@setOnItemSelectedListener true
                 }
                 R.id.chatroomList->{
                     replaceFragment(chatListFragment)
+                    supportActionBar?.title = "채팅"
                     return@setOnItemSelectedListener true
                 }
                 R.id.myPage->{
                     replaceFragment(myPageFragment)
+                    supportActionBar?.title = "마이페이지"
                     return@setOnItemSelectedListener true
                 }
                 else -> { return@setOnItemSelectedListener false}
             }//when(it.itemId)
         }//binding.bottomNavigationView.setOnItemSelectedListener
         replaceFragment(userFragment)
+        supportActionBar?.title = "친구"
     } //override fun onCreate(savedInstanceState: Bundle?)
 
     private fun replaceFragment(fragment: Fragment){
