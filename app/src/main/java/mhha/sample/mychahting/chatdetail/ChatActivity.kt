@@ -113,7 +113,7 @@ class ChatActivity: AppCompatActivity() {
             root.put("notification",notification)
             val requestBody = root.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
             val request = Request.Builder().post(requestBody).url("https://fcm.googleapis.com/fcm/send")
-                .header("Authorization", "key=AAAAyZft31o:APA91bHyRrUTMX4u3Jj-M27jIHUzjJPbMvIpCyZ7VQocs7Zlk6sSI2I-YN99DZxXgwu42CnMTPp5FKQkTj42aiPk5z9wdSpHt-cRK_uTQ2yr80BQV7fzC-m0lXLMZFxDVdXtkyFfkwNj")
+                .header("Authorization", "key=${getString(R.string.serverkey)}")
                 .build()
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
